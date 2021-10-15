@@ -12,43 +12,66 @@ namespace DocGuard_Desktop
 {
     class DocFileUpload
     {
-        public string FilePath { get; set; }
-        public string URL { get; set; }
-        public int maxFileSize = 26214400;
+        //Variable for initiliaze
+        public string filePath { get; set; }
+        public string Url { get; set; } //https://localhost:44351/api/FileAnalyzing/AnalyzeFile/
+        public string outputPath { get; set; }
+
+        //Variable for file status
         public int fileCount = 0;
+        public int readFileCount = 0;
+        public int errorCount = 0;
+        public int verdictCount = 0;
 
-
+        //Whilelist for file
         public string[] AllowedExtension = { ".hta", ".pdf", ".slk", ".csv", ".doc", ".dot", ".docx", ".docm", ".dotx", ".dotm",
                 ".wll", ".xls", ".xll", ".xlw", ".xlt", ".xlsx", ".xlsm", ".xlsb", ".xlam", ".xltx", ".xltm", ".ppt", ".pps",
                 ".pptx", ".pptm", ".ppsx", ".ppam", "ppa", ".rtf", ".bin", ".pub" };
 
-        public DocFileUpload(string Path)
+        public DocFileUpload(string filePath, string Url, string outputPath)
         {
-            FilePath = Path;
-            URL = "https://localhost:44351/api/FileAnalyzing/AnalyzeFile/";
+            this.filePath = filePath;
+            this.Url = Url;
+            this.outputPath = outputPath;
+
+            deleteAlreadyLogFile();
+
+            writeFile("[*] Docguard File Sender - " + DateTime.Now + "\n");
+
+            writeFile("[*] Source folder : " + filePath);
+            writeFile("[*] URL : " + Url);
+            writeFile("[*] Output path : " + outputPath + "output.txt\n");
+
         }
 
+        //List file and call FileUpload
         public void FolderList()
         {
             IEnumerable<string> files = new List<string>();
-            int fileCounter = 0;
+
+            //Read files destinationPath or finish program
             try
             {
-                files = Directory.EnumerateFiles(FilePath, "*.*", SearchOption.AllDirectories)
+                files = Directory.EnumerateFiles(filePath, "*.*", SearchOption.AllDirectories)
                 .Where(file => AllowedExtension.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
                 fileCount = files.Count();
-                
+
+                writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+
             }
             catch (Exception Ex)
             {
-                Console.WriteLine("There is error about sourceFolder path. Please try control it");
+                writeFile("[!] There is error about sourceFolder path. Please try control it\n");
                 return;
             }
-
 
             foreach (var file in files)
             {
                 var fileName = Path.GetFileName(file);
+                readFileCount += 1;
+
+                writeFile("[*] " + fileCount + "/" + readFileCount);
+
                 JObject response = null;
                 try
                 {
@@ -56,40 +79,37 @@ namespace DocGuard_Desktop
                 }
                 catch (Exception)
                 {
+                    writeFile("[!] There is an error while parsing Json response name file " + fileName);
+                    errorCount += 1;
                     continue;
                 }
                 
-                fileCounter = fileCounter + 1;
-
                 if (!(response is null))
                 {
-
                     if (response.ContainsKey("Error"))
                     {
-
-                        Console.WriteLine("----------------------------");
-                        Console.WriteLine(fileName);
-                        Console.WriteLine(response["Error"].ToString());
-                        Console.WriteLine("----------------------------");
-
+                        writeFile("\t[-] There is an error named file : " + fileName);
+                        writeFile("\t[-] Error message : " + response["Error"].ToString() + "\n");
+                        errorCount += 1;
                     }
-                    else
+                    else if (response.ContainsKey("Verdict"))
                     {
-                        Console.WriteLine("----------------------------");
-                        Console.WriteLine("Remain files to wait for analyze: {0}", fileCount - fileCounter);
-                        Console.WriteLine("----------------------------");
-                        Console.WriteLine(fileName);
-                        Console.WriteLine(response["FileType"]);
-                        Console.WriteLine(response["Verdict"]);
-                        Console.WriteLine("----------------------------");
+                        writeFile("\t[+] Get a successfull response named file : " + fileName);
+                        writeFile("\t[+] File type : " + response["FileType"].ToString());
+                        writeFile("\t[+] Status: " + response["Verdict"].ToString() + "\n");
+                        verdictCount += 1;
                     }
                 }
             }
+
+            writeFile("[*] All file is sent - " + DateTime.Now);
+            writeFile("[*] Success Count : " + verdictCount);
+            writeFile("[*] Error Count : " + errorCount);
         }
 
+        //FileUpload
         public string FileUpload(string file, string FileName)
         {
-            int fileCounter = 0;
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -104,9 +124,7 @@ namespace DocGuard_Desktop
                             var fileContent = new StreamContent(fileStream);
                             content.Add(fileContent, "file", FileName);
 
-
-
-                            var response = client.PostAsync(URL, content).GetAwaiter().GetResult();
+                            var response = client.PostAsync(Url, content).GetAwaiter().GetResult();
                             if (response.IsSuccessStatusCode)
                             {
                                 return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -119,15 +137,32 @@ namespace DocGuard_Desktop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine("[*] There is a error while file uploading. File name is " + FileName);
+                writeFile("[!] There is a error while file uploading. File name is " + FileName);
+                errorCount += 1;
                 return null;
             }
-
 
             return null;
         }
 
+        //Take data and write for output.txt
+        public void writeFile(string message)
+        {
+            using (StreamWriter writer = new StreamWriter(outputPath + "output.txt", true))
+            {
+                writer.WriteLine(message);
+            }
+        }
 
+        //Avoid append same text to output.txt so delete output.txt
+        public void deleteAlreadyLogFile()
+        {
+            if (File.Exists(outputPath + "output.txt"))
+            {
+                File.Delete(outputPath + "output.txt");
+            }
+
+        }
 
     }
 }

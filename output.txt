@@ -1,0 +1,31 @@
+[*] Docguard File Sender - 10/16/2021 12:45:08 AM
+
+[*] Source folder : C:\Erdemstar\Arge\Office\Mix
+[*] URL : https://api.docguard.net:8443/api/FileAnalyzing/AnalyzeFile/
+[*] Output path : C:\Users\Erdemstar\source\repos\DocGuard-Desktop\DocGuard-Desktop\output.txt
+
+[*] There is/are : 4 file/files to send
+
+[*] 4/1
+	[+] Get a successfull response named file : A Letter before court 4.docx
+	[+] File type : OOXML Word File
+	[+] Status: Malicious
+
+[*] 4/2
+	[+] Get a successfull response named file : erdemstar.rtf
+	[+] File type : RTF File
+	[+] Status: Clean
+
+[*] 4/3
+	[+] Get a successfull response named file : file_example_XLSX_50.xlsx
+	[+] File type : OOXML Excel File 
+	[+] Status: Clean
+
+[*] 4/4
+	[+] Get a successfull response named file : serversidetemplateinjection.pdf
+	[+] File type : PDF File
+	[+] Status: Clean
+
+[*] All file is sent. - 10/16/2021 12:45:12 AM
+[*] Success Count : 4
+[*] Error Count : 0

@@ -2,7 +2,7 @@
   "profiles": {
     "DocGuard-Desktop": {
       "commandName": "Project",
-      "commandLineArgs": "--sourceFolder C:\\StreAmeR\\DocGuard_TestLab\\Office\\GreatLab\\"
+      "commandLineArgs": "--sourceFolder C:\\Erdemstar\\Arge\\Office\\Mix  --destinationUrl https://api.docguard.net:8443/api/FileAnalyzing/AnalyzeFile/ --outputPath C:\\Users\\Erdemstar\\source\\repos\\DocGuard-Desktop\\DocGuard-Desktop\\"
     }
   }
 }
