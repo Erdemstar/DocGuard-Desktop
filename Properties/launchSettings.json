@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DocGuard-Desktop": {
+      "commandName": "Project",
+      "commandLineArgs": "--sourceFolder C:\\StreAmeR\\DocGuard_TestLab\\Office\\GreatLab\\"
+    }
+  }
+}

