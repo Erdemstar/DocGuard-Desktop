@@ -57,13 +57,17 @@ namespace DocGuard_Desktop
                 throw;
             }
 
+            //Before write someting to output.txt, delete output.txt which already created
             deleteAlreadyLogFile();
 
+            //Write App name with date
             writeFile("[*] Docguard File Sender - " + DateTime.Now + "\n");
 
+            //Write parametre which take from user
             writeFile("[*] Source folder : " + filePath);
             writeFile("[*] URL : " + Url);
-            writeFile("[*] Output path : " + outputPath + "output.txt\n");
+            writeFile("[*] Output path : " + outputPath + "output.txt");
+            writeFile("[*] Thread will sleep : " + threadSleep + " seconds\n");
 
         }
 
@@ -84,10 +88,11 @@ namespace DocGuard_Desktop
             }
             catch (Exception Ex)
             {
-                writeFile("[!] There is error about sourceFolder path. Please try control it\n");
+                writeFile("\n[!] There is error about sourceFolder path. Please try control it\n");
                 return;
             }
 
+            //iterate all file and send it for upload
             foreach (var file in files)
             {
                 var fileName = Path.GetFileName(file);
@@ -103,7 +108,7 @@ namespace DocGuard_Desktop
                 }
                 catch (Exception)
                 {
-                    writeFile("[!] There is an error while parsing Json response name file " + fileName);
+                    writeFile("\t[!] There is an error while parsing Json response name file : " + fileName + "\n");
                     errorCount += 1;
                     continue;
                 }
@@ -112,22 +117,23 @@ namespace DocGuard_Desktop
                 {
                     if (response.ContainsKey("Error"))
                     {
-                        writeFile("\t[-] There is an error named file : " + fileName);
+                        writeFile("\t[-] File Name : " + fileName);
                         writeFile("\t[-] Error message : " + response["Error"].ToString() + "\n");
                         errorCount += 1;
                     }
                     else if (response.ContainsKey("Verdict"))
                     {
-                        writeFile("\t[+] File Name: " + fileName);
-                        writeFile("\t[+] Full Path: " + file);
-                        writeFile("\t[+] File type: " + response["FileType"].ToString());
-                        writeFile("\t[+] Verdict: " + response["Verdict"].ToString() + "\n");
-                        writeFile("\t[+] MD5: " + response["FileMD5Hash"].ToString() + "\n");
+                        writeFile("\t[+] File Name : " + fileName);
+                        writeFile("\t[+] Full Path : " + file);
+                        writeFile("\t[+] File type : " + response["FileType"].ToString());
+                        writeFile("\t[+] Verdict : " + response["Verdict"].ToString());
+                        writeFile("\t[+] MD5 : " + response["FileMD5Hash"].ToString() + "\n");
                         verdictCount += 1;
                     }
                 }
             }
 
+            //Sending process is finish write brief about sending
             writeFile("[*] All file is sent - " + DateTime.Now);
             writeFile("[*] Success Count : " + verdictCount);
             writeFile("[*] Error Count : " + errorCount);
@@ -163,7 +169,7 @@ namespace DocGuard_Desktop
             }
             catch (Exception Ex)
             {
-                writeFile("[!] There is a error while file uploading. File name is " + FileName);
+                writeFile("\t[!] There is a error while file uploading. File name is : " + FileName + "\n");
                 errorCount += 1;
                 return null;
             }
@@ -180,7 +186,7 @@ namespace DocGuard_Desktop
             }
         }
 
-        //Avoid append same text to output.txt so delete output.txt
+        //Avoid append same text to output.txt so that delete output.txt
         public void deleteAlreadyLogFile()
         {
             if (File.Exists(outputPath + "output.txt"))
