@@ -6,13 +6,13 @@ namespace DocGuard_Desktop
     {
         static void Main(string[] args)
         {
-            if (args.Length != 6 || (args[0] != "--sourceFolder" && args[2] != "--destinationUrl" && args[4] != "--outputPath"))
+            if (args.Length != 8 || (args[0] != "--sourceFolder" && args[2] != "--destinationUrl" && args[4] != "--outputPath" && args[6] != "--threadSleep"))
             {
                 Help();
                 return;
             }
 
-            DocFileUpload DFU = new DocFileUpload(args[1], args[3], args[5]);
+            DocFileUpload DFU = new DocFileUpload(args[1], args[3], args[5], args[7]);
             DFU.FolderList();
 
         }

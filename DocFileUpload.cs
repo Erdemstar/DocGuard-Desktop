@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using System.Threading;
 
 namespace DocGuard_Desktop
 {
@@ -16,6 +17,7 @@ namespace DocGuard_Desktop
         public string filePath { get; set; }
         public string Url { get; set; } //https://localhost:44351/api/FileAnalyzing/AnalyzeFile/
         public string outputPath { get; set; }
+        public int _threadSleep;
 
         //Variable for file status
         public int fileCount = 0;
@@ -28,11 +30,32 @@ namespace DocGuard_Desktop
                 ".wll", ".xls", ".xll", ".xlw", ".xlt", ".xlsx", ".xlsm", ".xlsb", ".xlam", ".xltx", ".xltm", ".ppt", ".pps",
                 ".pptx", ".pptm", ".ppsx", ".ppam", "ppa", ".rtf", ".bin", ".pub" };
 
-        public DocFileUpload(string filePath, string Url, string outputPath)
+        public DocFileUpload(string filePath, string Url, string outputPath, string threadSleep)
         {
             this.filePath = filePath;
             this.Url = Url;
             this.outputPath = outputPath;
+
+            try
+            {
+                if(String.IsNullOrEmpty(threadSleep) || String.IsNullOrWhiteSpace(threadSleep))
+                {
+                    _threadSleep = 0;
+                }
+                else if(!Int32.TryParse(threadSleep, out _threadSleep))
+                {
+                    throw new ApplicationException("ID wasn't an integer");
+                }
+                if(!(_threadSleep >= 0) || !(_threadSleep <= 61))
+                {
+                    throw new ApplicationException("threadSleep value cannot be less than 60 seconds");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
 
             deleteAlreadyLogFile();
 
@@ -69,6 +92,7 @@ namespace DocGuard_Desktop
             {
                 var fileName = Path.GetFileName(file);
                 readFileCount += 1;
+                Thread.Sleep(TimeSpan.FromSeconds(_threadSleep));
 
                 writeFile("[*] " + fileCount + "/" + readFileCount);
 
@@ -94,9 +118,11 @@ namespace DocGuard_Desktop
                     }
                     else if (response.ContainsKey("Verdict"))
                     {
-                        writeFile("\t[+] Get a successfull response named file : " + fileName);
-                        writeFile("\t[+] File type : " + response["FileType"].ToString());
-                        writeFile("\t[+] Status: " + response["Verdict"].ToString() + "\n");
+                        writeFile("\t[+] File Name: " + fileName);
+                        writeFile("\t[+] Full Path: " + file);
+                        writeFile("\t[+] File type: " + response["FileType"].ToString());
+                        writeFile("\t[+] Verdict: " + response["Verdict"].ToString() + "\n");
+                        writeFile("\t[+] MD5: " + response["FileMD5Hash"].ToString() + "\n");
                         verdictCount += 1;
                     }
                 }
