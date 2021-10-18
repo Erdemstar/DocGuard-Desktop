@@ -1,8 +1,7 @@
 {
   "profiles": {
     "DocGuard-Desktop": {
-      "commandName": "Project",
-      "commandLineArgs": "--sourceFolder C:\\StreAmeR\\DocGuard_TestLab\\Office  --destinationUrl https://localhost:44351/api/FileAnalyzing/AnalyzeFile/ --outputPath C:\\Users\\bilgi\\Source\\Repos\\DocGuard-Desktop\\ --threadSleep 2"
+      "commandName": "Project"
     }
   }
 }

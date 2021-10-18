@@ -1,0 +1,40 @@
+[*] Docguard File Sender - 10/18/2021 1:22:13 PM
+
+[*] Source folder : C:\TestPC\Arge\Office\Mix
+[*] URL : https://api.docguard.net:8443/api/FileAnalyzing/AnalyzeFile/
+[*] Output path : C:\Users\TestPC\source\repos\DocGuard-Desktop\DocGuard-Desktop\output.txt
+[*] Thread will sleep : 2 seconds
+
+[*] There is/are : 4 file/files to send
+
+[*] 4/1
+	[+] File Name : A Letter before court 4.docx
+	[+] Full Path : C:\TestPC\Arge\Office\Mix\A Letter before court 4.docx
+	[+] File type : OOXML Word File
+	[+] Verdict : Malicious
+	[+] MD5 : 1d2094ce85d66878ee079185e2761beb
+
+[*] 4/2
+	[+] File Name : TestPC.rtf
+	[+] Full Path : C:\TestPC\Arge\Office\Mix\TestPC.rtf
+	[+] File type : RTF File
+	[+] Verdict : Clean
+	[+] MD5 : 52308283db163d8f23f4cb957b4303cc
+
+[*] 4/3
+	[+] File Name : file_example_XLSX_50.xlsx
+	[+] Full Path : C:\TestPC\Arge\Office\Mix\file_example_XLSX_50.xlsx
+	[+] File type : OOXML Excel File 
+	[+] Verdict : Clean
+	[+] MD5 : 5c256f2de57126cac5ac629ce42ca754
+
+[*] 4/4
+	[+] File Name : serversidetemplateinjection.pdf
+	[+] Full Path : C:\TestPC\Arge\Office\Mix\serversidetemplateinjection.pdf
+	[+] File type : PDF File
+	[+] Verdict : Clean
+	[+] MD5 : 62fa6aff19205af7b9e992292e5bc16c
+
+[*] All file is sent - 10/18/2021 1:22:26 PM
+[*] Success Count : 4
+[*] Error Count : 0
