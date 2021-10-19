@@ -15,15 +15,14 @@ namespace DocGuard_Desktop
     {
         #region Variable for initiliaze
         public string type { get; set; }
-        public string username { get; set; }
+        public string email { get; set; }
         public string password { get; set; }
         public string token { get; set; } = null;
         public string filePath { get; set; }
         public string folderPath { get; set; }
         public string Url { get; set; }
         public string outputPath { get; set; }
-        public string threadSleep { get; set; }
-        public int _threadSleep;
+        public int threadSleep { get; set; }
         #endregion
 
         #region Variable for file status
@@ -112,7 +111,7 @@ namespace DocGuard_Desktop
                 var fileName = Path.GetFileName(file);
                 readFileCount += 1;
 
-                Thread.Sleep(TimeSpan.FromSeconds(_threadSleep));
+                Thread.Sleep(TimeSpan.FromSeconds(threadSleep));
 
                 writeFile("[*] " + fileCount + "/" + readFileCount);
 
@@ -226,15 +225,7 @@ namespace DocGuard_Desktop
         {
             try
             {
-                if (String.IsNullOrEmpty(threadSleep) || String.IsNullOrWhiteSpace(threadSleep))
-                {
-                    _threadSleep = 0;
-                }
-                else if (!Int32.TryParse(threadSleep, out _threadSleep))
-                {
-                    throw new ApplicationException("ID wasn't an integer");
-                }
-                if (!(_threadSleep >= 0) || !(_threadSleep <= 61))
+                if (!(threadSleep >= 0) || !(threadSleep <= 61))
                 {
                     throw new ApplicationException("threadSleep value cannot be less than 60 seconds");
                 }
@@ -251,8 +242,8 @@ namespace DocGuard_Desktop
         //Generate Token
         public void getToken()
         {
-            //Control username if username is null user is a anonymous
-            if (!(username is null))
+            //Control email if email is null user is a anonymous
+            if (!(email is null))
             {
                 string resp = null;
 
@@ -264,8 +255,8 @@ namespace DocGuard_Desktop
                         using (var content = new MultipartFormDataContent())
                         {
 
-                            content.Add(new StringContent(username), "Username");
-                            content.Add(new StringContent(username), "Email");
+                            content.Add(new StringContent(email), "Username");
+                            content.Add(new StringContent(email), "Email");
                             content.Add(new StringContent(password), "Password");
                             content.Add(new StringContent("false"), "RememberMe");
 
@@ -280,7 +271,7 @@ namespace DocGuard_Desktop
                 }
                 catch (Exception ex)
                 {
-                    writeFile("\t[!] There is an error while getting username : " + username + "\n");
+                    writeFile("\t[!] There is an error while getting email : " + email + "\n");
                 }
 
                 //Control resp for token
@@ -294,12 +285,12 @@ namespace DocGuard_Desktop
                         }
                         catch (Exception)
                         {
-                            writeFile("\t[!] There is an error while parsing username : " + username + "\n");
+                            writeFile("\t[!] There is an error while parsing email : " + email + "\n");
                         }
                     }
                     else
                     {
-                        writeFile("\t[!] There is an error username or password\n");
+                        writeFile("\t[!] There is an error email or password\n");
                     }
                 }
 
