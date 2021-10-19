@@ -1,7 +1,8 @@
 {
   "profiles": {
     "DocGuard-Desktop": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--anonymous --sourceFile C:\\Erdemstar\\Arge\\Office\\Mix\\serversidetemplateinjection.pdf --destinationUrl https://api.docguard.net:8443/ --outputPath C:\\Users\\Erdemstar\\source\\repos\\DocGuard-Desktop\\DocGuard-Desktop\\ --threadSleep 2 "
     }
   }
 }

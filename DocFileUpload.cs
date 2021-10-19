@@ -13,50 +13,35 @@ namespace DocGuard_Desktop
 {
     class DocFileUpload
     {
-        //Variable for initiliaze
+        #region Variable for initiliaze
+        public string type { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string token { get; set; } = null;
         public string filePath { get; set; }
-        public string Url { get; set; } //https://localhost:44351/api/FileAnalyzing/AnalyzeFile/
+        public string folderPath { get; set; }
+        public string Url { get; set; }
         public string outputPath { get; set; }
+        public string threadSleep { get; set; }
         public int _threadSleep;
+        #endregion
 
-        //Variable for file status
+        #region Variable for file status
         public int fileCount = 0;
         public int readFileCount = 0;
         public int errorCount = 0;
         public int verdictCount = 0;
+        #endregion
 
-        //Whilelist for file
+        #region Whilelist for file
         public string[] AllowedExtension = { ".hta", ".pdf", ".slk", ".csv", ".doc", ".dot", ".docx", ".docm", ".dotx", ".dotm",
                 ".wll", ".xls", ".xll", ".xlw", ".xlt", ".xlsx", ".xlsm", ".xlsb", ".xlam", ".xltx", ".xltm", ".ppt", ".pps",
                 ".pptx", ".pptm", ".ppsx", ".ppam", "ppa", ".rtf", ".bin", ".pub" };
+        #endregion
 
-        public DocFileUpload(string filePath, string Url, string outputPath, string threadSleep)
+        //
+        public void Header()
         {
-            this.filePath = filePath;
-            this.Url = Url;
-            this.outputPath = outputPath;
-
-            try
-            {
-                if(String.IsNullOrEmpty(threadSleep) || String.IsNullOrWhiteSpace(threadSleep))
-                {
-                    _threadSleep = 0;
-                }
-                else if(!Int32.TryParse(threadSleep, out _threadSleep))
-                {
-                    throw new ApplicationException("ID wasn't an integer");
-                }
-                if(!(_threadSleep >= 0) || !(_threadSleep <= 61))
-                {
-                    throw new ApplicationException("threadSleep value cannot be less than 60 seconds");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-
             //Before write someting to output.txt, delete output.txt which already created
             deleteAlreadyLogFile();
 
@@ -64,32 +49,61 @@ namespace DocGuard_Desktop
             writeFile("[*] Docguard File Sender - " + DateTime.Now + "\n");
 
             //Write parametre which take from user
-            writeFile("[*] Source folder : " + filePath);
+            if (!(folderPath is null))
+            {
+                writeFile("[*] Source folder : " + folderPath);
+
+            }
+            else
+            {
+                writeFile("[*] Source file : " + filePath);
+            }
             writeFile("[*] URL : " + Url);
             writeFile("[*] Output path : " + outputPath + "output.txt");
             writeFile("[*] Thread will sleep : " + threadSleep + " seconds\n");
-
         }
 
         //List file and call FileUpload
-        public void FolderList()
+        public void List()
         {
             IEnumerable<string> files = new List<string>();
 
-            //Read files destinationPath or finish program
-            try
+            if (!(folderPath is null))
             {
-                files = Directory.EnumerateFiles(filePath, "*.*", SearchOption.AllDirectories)
-                .Where(file => AllowedExtension.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
-                fileCount = files.Count();
+                try
+                {
+                    files = Directory.EnumerateFiles(folderPath, "*.*", SearchOption.AllDirectories)
+                    .Where(file => AllowedExtension.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
 
-                writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+                    fileCount = files.Count();
 
+                    writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+
+                }
+                catch (Exception Ex)
+                {
+                    writeFile("\n[!] There is error about sourceFolder path. Please try control it\n");
+                    return;
+                }
             }
-            catch (Exception Ex)
+            else if (!(filePath is null))
             {
-                writeFile("\n[!] There is error about sourceFolder path. Please try control it\n");
-                return;
+                try
+                {
+                    IEnumerable<string> tmp = new List<string>();
+
+                    files = tmp.Append(filePath)
+                    .Where(file => AllowedExtension.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
+                    fileCount = files.Count();
+
+                    writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+
+                }
+                catch (Exception Ex)
+                {
+                    writeFile("\n[!] There is error about sourceFile path. Please try control it\n");
+                    return;
+                }
             }
 
             //iterate all file and send it for upload
@@ -97,6 +111,7 @@ namespace DocGuard_Desktop
             {
                 var fileName = Path.GetFileName(file);
                 readFileCount += 1;
+
                 Thread.Sleep(TimeSpan.FromSeconds(_threadSleep));
 
                 writeFile("[*] " + fileCount + "/" + readFileCount);
@@ -112,7 +127,7 @@ namespace DocGuard_Desktop
                     errorCount += 1;
                     continue;
                 }
-                
+
                 if (!(response is null))
                 {
                     if (response.ContainsKey("Error"))
@@ -133,7 +148,11 @@ namespace DocGuard_Desktop
                 }
             }
 
-            //Sending process is finish write brief about sending
+        }
+
+        //
+        public void Footer()
+        {
             writeFile("[*] All file is sent - " + DateTime.Now);
             writeFile("[*] Success Count : " + verdictCount);
             writeFile("[*] Error Count : " + errorCount);
@@ -156,7 +175,13 @@ namespace DocGuard_Desktop
                             var fileContent = new StreamContent(fileStream);
                             content.Add(fileContent, "file", FileName);
 
-                            var response = client.PostAsync(Url, content).GetAwaiter().GetResult();
+                            if (!(token is null))
+                            {
+                                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                            }
+
+                            var response = client.PostAsync(Url + "api/FileAnalyzing/AnalyzeFile/", content).GetAwaiter().GetResult();
                             if (response.IsSuccessStatusCode)
                             {
                                 return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -196,5 +221,124 @@ namespace DocGuard_Desktop
 
         }
 
+        //Control threadSleep value and assingee _threadSleep
+        public void threadSleepControl()
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(threadSleep) || String.IsNullOrWhiteSpace(threadSleep))
+                {
+                    _threadSleep = 0;
+                }
+                else if (!Int32.TryParse(threadSleep, out _threadSleep))
+                {
+                    throw new ApplicationException("ID wasn't an integer");
+                }
+                if (!(_threadSleep >= 0) || !(_threadSleep <= 61))
+                {
+                    throw new ApplicationException("threadSleep value cannot be less than 60 seconds");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+
+
+        }
+
+        //Generate Token
+        public void getToken()
+        {
+            //Control username if username is null user is a anonymous
+            if (!(username is null))
+            {
+                string resp = null;
+
+                //Send request for loging and take response
+                try
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        using (var content = new MultipartFormDataContent())
+                        {
+
+                            content.Add(new StringContent(username), "Username");
+                            content.Add(new StringContent(username), "Email");
+                            content.Add(new StringContent(password), "Password");
+                            content.Add(new StringContent("false"), "RememberMe");
+
+                            var response = client.PostAsync(Url + "Account/Login", content).GetAwaiter().GetResult();
+                            if (response.IsSuccessStatusCode)
+                            {
+                                resp = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    writeFile("\t[!] There is an error while getting username : " + username + "\n");
+                }
+
+                //Control resp for token
+                if (!(resp is null))
+                {
+                    if (resp.Contains("Token"))
+                    {
+                        try
+                        {
+                            token = JObject.Parse(resp)["Token"].ToString();
+                        }
+                        catch (Exception)
+                        {
+                            writeFile("\t[!] There is an error while parsing username : " + username + "\n");
+                        }
+                    }
+                    else
+                    {
+                        writeFile("\t[!] There is an error username or password\n");
+                    }
+                }
+
+            }
+
+        }
+
+
+        public void Start()
+        {
+
+            if(type == "credentials")
+            {
+                Header();
+                getToken();
+                threadSleepControl();
+
+                // Burada null olana izin verirsem adamın tüm dosyaları public olarak upload edilecektir.
+                if (token != null)
+                {
+                    List();
+                }
+
+                Footer();
+            }
+            else
+            {
+                Header();
+                threadSleepControl();
+                List();
+                Footer();
+            }
+
+            
+
+
+        }
+
     }
 }
+
+
