@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DocGuard_Desktop
+namespace DocGuard_Desktop.Class
 {
     class Options
     {

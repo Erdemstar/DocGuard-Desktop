@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading;
 
-namespace DocGuard_Desktop
+
+namespace DocGuard_Desktop.Class
 {
     class DocFileUpload
     {
@@ -23,6 +21,10 @@ namespace DocGuard_Desktop
         public string Url { get; set; }
         public string outputPath { get; set; }
         public int threadSleep { get; set; }
+
+        public Output opt = new Output();
+
+
         #endregion
 
         #region Variable for file status
@@ -38,6 +40,12 @@ namespace DocGuard_Desktop
                 ".pptx", ".pptm", ".ppsx", ".ppam", "ppa", ".rtf", ".bin", ".pub" };
         #endregion
 
+        public DocFileUpload()
+        {
+            opt.succesOutput = new List<successOutput>();
+            opt.errorOutput = new List<errorOutput>();
+        }
+
         //
         public void Header()
         {
@@ -45,21 +53,21 @@ namespace DocGuard_Desktop
             deleteAlreadyLogFile();
 
             //Write App name with date
-            writeFile("[*] Docguard File Sender - " + DateTime.Now + "\n");
+            opt.appName = "Docguard File Sender  - " + DateTime.Now;
 
             //Write parametre which take from user
             if (!(folderPath is null))
             {
-                writeFile("[*] Source folder : " + folderPath);
+                opt.sourceFolder = folderPath;
 
             }
             else
             {
-                writeFile("[*] Source file : " + filePath);
+                opt.sourceFile = filePath;
             }
-            writeFile("[*] URL : " + Url);
-            writeFile("[*] Output path : " + outputPath + "output.txt");
-            writeFile("[*] Thread will sleep : " + threadSleep + " seconds\n");
+            opt.Url = Url;
+            opt.outputPath = outputPath + "output.json";
+            opt.threadSleepCount = threadSleep;
         }
 
         //List file and call FileUpload
@@ -76,12 +84,13 @@ namespace DocGuard_Desktop
 
                     fileCount = files.Count();
 
-                    writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+                    opt.fileCount = fileCount;
+
 
                 }
                 catch (Exception Ex)
                 {
-                    writeFile("\n[!] There is error about sourceFolder path. Please try control it\n");
+                    addError("There is error about sourceFolder path. Please try control it");
                     return;
                 }
             }
@@ -95,12 +104,13 @@ namespace DocGuard_Desktop
                     .Where(file => AllowedExtension.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
                     fileCount = files.Count();
 
-                    writeFile("[*] There is/are : " + fileCount + " file/files to send\n");
+                    opt.fileCount = fileCount;
 
                 }
                 catch (Exception Ex)
                 {
-                    writeFile("\n[!] There is error about sourceFile path. Please try control it\n");
+                    addError("There is error about sourceFile path. Please try control it");
+
                     return;
                 }
             }
@@ -108,12 +118,12 @@ namespace DocGuard_Desktop
             //iterate all file and send it for upload
             foreach (var file in files)
             {
+                successOutput so = new successOutput();
+
                 var fileName = Path.GetFileName(file);
                 readFileCount += 1;
 
                 Thread.Sleep(TimeSpan.FromSeconds(threadSleep));
-
-                writeFile("[*] " + fileCount + "/" + readFileCount);
 
                 JObject response = null;
                 try
@@ -122,7 +132,7 @@ namespace DocGuard_Desktop
                 }
                 catch (Exception)
                 {
-                    writeFile("\t[!] There is an error while parsing Json response name file : " + fileName + "\n");
+                    addError("There is an error while parsing Json response name file : " + fileName);
                     errorCount += 1;
                     continue;
                 }
@@ -131,30 +141,33 @@ namespace DocGuard_Desktop
                 {
                     if (response.ContainsKey("Error"))
                     {
-                        writeFile("\t[-] File Name : " + fileName);
-                        writeFile("\t[-] Error message : " + response["Error"].ToString() + "\n");
+                        so.fileName = fileName;
+                        so.errorMessage = response["Error"].ToString();
+                        so.filePath = "";
+                        so.fileType = "";
+                        so.Veridict = "";
+                        so.MD5 = "";
+
+                        opt.succesOutput.Add(so);
+
                         errorCount += 1;
                     }
                     else if (response.ContainsKey("Verdict"))
                     {
-                        writeFile("\t[+] File Name : " + fileName);
-                        writeFile("\t[+] Full Path : " + file);
-                        writeFile("\t[+] File type : " + response["FileType"].ToString());
-                        writeFile("\t[+] Verdict : " + response["Verdict"].ToString());
-                        writeFile("\t[+] MD5 : " + response["FileMD5Hash"].ToString() + "\n");
+                        so.fileName = fileName;
+                        so.errorMessage = "";
+                        so.filePath = file;
+                        so.fileType = response["FileType"].ToString();
+                        so.Veridict = response["Verdict"].ToString();
+                        so.MD5 = response["FileMD5Hash"].ToString();
+
+                        opt.succesOutput.Add(so);
+
                         verdictCount += 1;
                     }
                 }
             }
 
-        }
-
-        //
-        public void Footer()
-        {
-            writeFile("[*] All file is sent - " + DateTime.Now);
-            writeFile("[*] Success Count : " + verdictCount);
-            writeFile("[*] Error Count : " + errorCount);
         }
 
         //FileUpload
@@ -193,7 +206,8 @@ namespace DocGuard_Desktop
             }
             catch (Exception Ex)
             {
-                writeFile("\t[!] There is a error while file uploading. File name is : " + FileName + "\n");
+                addError("There is a error while file uploading. File name is : " + FileName);
+
                 errorCount += 1;
                 return null;
             }
@@ -201,21 +215,12 @@ namespace DocGuard_Desktop
             return null;
         }
 
-        //Take data and write for output.txt
-        public void writeFile(string message)
-        {
-            using (StreamWriter writer = new StreamWriter(outputPath + "output.txt", true))
-            {
-                writer.WriteLine(message);
-            }
-        }
-
         //Avoid append same text to output.txt so that delete output.txt
         public void deleteAlreadyLogFile()
         {
-            if (File.Exists(outputPath + "output.txt"))
+            if (File.Exists(outputPath + "output.json"))
             {
-                File.Delete(outputPath + "output.txt");
+                File.Delete(outputPath + "output.json");
             }
 
         }
@@ -227,11 +232,12 @@ namespace DocGuard_Desktop
             {
                 if (!(threadSleep >= 0) || !(threadSleep <= 61))
                 {
-                    throw new ApplicationException("threadSleep value cannot be less than 60 seconds");
+                    threadSleep = 2;
                 }
             }
             catch (Exception ex)
             {
+                addError("There is a error on threadSleep");
                 Console.WriteLine(ex.Message);
                 throw;
             }
@@ -271,7 +277,7 @@ namespace DocGuard_Desktop
                 }
                 catch (Exception ex)
                 {
-                    writeFile("\t[!] There is an error while getting email : " + email + "\n");
+                    addError("There is an error while getting email : " + email);
                 }
 
                 //Control resp for token
@@ -285,48 +291,69 @@ namespace DocGuard_Desktop
                         }
                         catch (Exception)
                         {
-                            writeFile("\t[!] There is an error while parsing email : " + email + "\n");
+                            addError("There is an error while parsing email : " + email);
                         }
                     }
-                    else
-                    {
-                        writeFile("\t[!] There is an error email or password\n");
-                    }
+
                 }
 
             }
 
         }
 
-
+        //Start control
         public void Start()
         {
 
-            if(type == "credentials")
+            if (type == "credentials")
             {
+                opt.type = "credentials";
                 Header();
                 getToken();
                 threadSleepControl();
 
-                // Burada null olana izin verirsem adamın tüm dosyaları public olarak upload edilecektir.
+                //If token is null , all file which upload will be public
                 if (token != null)
                 {
                     List();
                 }
 
                 Footer();
+                Write();
             }
             else
             {
+                opt.type = "anonymous";
                 Header();
                 threadSleepControl();
                 List();
                 Footer();
+                Write();
             }
 
-            
+        }
 
+        //take last status
+        public void Footer()
+        {
+            opt.finish = "Docguard File Sender  - " + DateTime.Now;
+            opt.successCount = verdictCount;
+            opt.errorCount = errorCount;
+        }
 
+        //take error mesagge for output
+        public void addError(string errorMessage)
+        {
+            errorOutput eo = new errorOutput();
+            eo.errorMessage = errorMessage;
+            opt.errorOutput.Add(eo);
+        }
+
+        //write json output
+        public void Write()
+        {
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(opt);
+            File.WriteAllText(outputPath + "output.json", json);
         }
 
     }

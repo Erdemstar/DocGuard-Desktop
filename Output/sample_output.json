@@ -1,0 +1,48 @@
+{
+	"appName": "Docguard File Sender  - 10/20/2021 1:12:50 PM",
+	"type": "anonymous",
+	"sourceFile": null,
+	"sourceFolder": "C:\\Testuser\\Arge\\Office\\Mix",
+	"Url": "https://api.docguard.net:8443/",
+	"outputPath": "C:\\Users\\Testuser\\source\\repos\\DocGuard-Desktop\\DocGuard-Desktop\\output.txt",
+	"threadSleepCount": 2,
+	"succesOutput": [
+		{
+			"fileName": "A Letter before court 4.docx",
+			"errorMessage": "",
+			"filePath": "C:\\Testuser\\Arge\\Office\\Mix\\A Letter before court 4.docx",
+			"fileType": "OOXML Word File",
+			"Veridict": "Malicious",
+			"MD5": "1d2094ce85d66878ee079185e2761beb"
+		},
+		{
+			"fileName": "erdemstar.rtf",
+			"errorMessage": "",
+			"filePath": "C:\\Testuser\\Arge\\Office\\Mix\\erdemstar.rtf",
+			"fileType": "RTF File",
+			"Veridict": "Clean",
+			"MD5": "52308283db163d8f23f4cb957b4303cc"
+		},
+		{
+			"fileName": "file_example_XLSX_50.xlsx",
+			"errorMessage": "",
+			"filePath": "C:\\Testuser\\Arge\\Office\\Mix\\file_example_XLSX_50.xlsx",
+			"fileType": "OOXML Excel File ",
+			"Veridict": "Clean",
+			"MD5": "5c256f2de57126cac5ac629ce42ca754"
+		},
+		{
+			"fileName": "serversidetemplateinjection.pdf",
+			"errorMessage": "",
+			"filePath": "C:\\Testuser\\Arge\\Office\\Mix\\serversidetemplateinjection.pdf",
+			"fileType": "PDF File",
+			"Veridict": "Clean",
+			"MD5": "62fa6aff19205af7b9e992292e5bc16c"
+		}
+	],
+	"errorOutput": [],
+	"fileCount": 4,
+	"successCount": 4,
+	"errorCount": 0,
+	"finish": "Docguard File Sender  - 10/20/2021 1:13:03 PM"
+}

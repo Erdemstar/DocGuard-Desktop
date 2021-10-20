@@ -21,4 +21,4 @@
 * DocGuard-Desktop.exe --credentials true --email Testuser@streamer.com --password streAmer* --sourceFile C:\Testuser\Arge\Office\Mix\serversidetemplateinjection.pdf  --destinationUrl https://api.docguard.net:8443/ --outputPath C:\Users\Testuser\source\repos\DocGuard-Desktop\DocGuard-Desktop\ --threadSleep 2 
 
 ## Example Output
-For sample output, created a file named sample_output.txt. Before a scan, you can control how you get the output.
+For sample output, created a file named sample_output.json. Before a scan, you can control how you get the output.
