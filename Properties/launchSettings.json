@@ -1,7 +1,8 @@
 {
   "profiles": {
     "DocGuard-Desktop": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--credentials false --sourceFile C:\\StreAmeR\\DocGuard_TestLab\\Office\\OOXML_VBA5Macro_OCR.xlsm  --destinationUrl https://api.docguard.net:8443/ --outputPath C:\\Users\\bilgi\\source\\repos\\DocGuard-Desktop\\ --threadSleep 2"
     }
   }
 }

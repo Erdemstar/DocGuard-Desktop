@@ -145,7 +145,7 @@ namespace DocGuard_Desktop.Class
                         so.errorMessage = response["Error"].ToString();
                         so.filePath = "";
                         so.fileType = "";
-                        so.Veridict = "";
+                        so.Verdict = "";
                         so.MD5 = "";
 
                         opt.succesOutput.Add(so);
@@ -158,7 +158,7 @@ namespace DocGuard_Desktop.Class
                         so.errorMessage = "";
                         so.filePath = file;
                         so.fileType = response["FileType"].ToString();
-                        so.Veridict = response["Verdict"].ToString();
+                        so.Verdict = response["Verdict"].ToString();
                         so.MD5 = response["FileMD5Hash"].ToString();
 
                         opt.succesOutput.Add(so);

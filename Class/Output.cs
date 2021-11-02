@@ -30,7 +30,7 @@ namespace DocGuard_Desktop.Class
         public string errorMessage { get; set; }
         public string filePath { get; set; }
         public string fileType { get; set; }
-        public string Veridict { get; set; }
+        public string Verdict { get; set; }
         public string MD5 { get; set; }
     }
 
